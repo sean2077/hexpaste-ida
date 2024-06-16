@@ -25,23 +25,10 @@ import re
 
 import idaapi
 import idc
-
-major, minor = map(int, idaapi.get_kernel_version().split("."))
-using_ida7api = major > 6
-
-if using_ida7api:
-    import PyQt5.QtCore as QtCore
-    import PyQt5.QtGui as QtGui
-    import PyQt5.QtWidgets as QtWidgets
-    from PyQt5.Qt import QApplication
-else:
-    import PySide.QtCore as QtCore
-    import PySide.QtGui as QtGui
-
-    QtWidgets = QtGui
-    QtCore.pyqtSignal = QtCore.Signal
-    QtCore.pyqtSlot = QtCore.Slot
-    from PySide.QtGui import QApplication
+import PyQt5.QtCore as QtCore
+import PyQt5.QtGui as QtGui
+import PyQt5.QtWidgets as QtWidgets
+from PyQt5.Qt import QApplication
 
 
 def get_clipboard_data():
@@ -84,10 +71,10 @@ def PLUGIN_ENTRY():
     """
     Required plugin entry point for IDAPython Plugins.
     """
-    return hex_paste()
+    return HexPastePlugin()
 
 
-class hex_paste(idaapi.plugin_t):
+class HexPastePlugin(idaapi.plugin_t):
     """
     The IDA Plugin for hex paste.
     """
@@ -160,20 +147,13 @@ class Hooks(idaapi.UI_Hooks):
         inject_hex_paste_actions(widget, popup, idaapi.get_widget_type(widget))
         return 0
 
-    def finish_populating_tform_popup(self, form, popup):
-        """
-        A right-click menu is about to be shown. (IDA 6.x)
-        """
-        inject_hex_paste_actions(form, popup, idaapi.get_tform_type(form))
-        return 0
-
 
 def inject_hex_paste_actions(form, popup, form_type):
     """
     Inject paste actions to popup menu(s) based on context.
     """
     if form_type == idaapi.BWN_DISASMS:
-        idaapi.attach_action_to_popup(form, popup, hex_paste.ACTION_PASTE_BYTES, "Paste Hex", idaapi.SETMENU_APP)
+        idaapi.attach_action_to_popup(form, popup, HexPastePlugin.ACTION_PASTE_BYTES, "Paste Hex", idaapi.SETMENU_APP)
     return 0
 
 
