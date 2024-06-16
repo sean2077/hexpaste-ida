@@ -19,6 +19,8 @@ PLUGIN_NAME = "Hex Paste"
 PLUGIN_HOTKEY = "Ctrl+Shift+V"
 VERSION = "1.0.0"
 
+ACTION_PREFIX = "sean2077"
+
 import re
 
 import idaapi
@@ -126,7 +128,7 @@ class hex_paste(idaapi.plugin_t):
         self._hooks = Hooks()
         self._hooks.hook()
 
-    ACTION_PASTE_BYTES = "prefix:paste_bytes"
+    ACTION_PASTE_BYTES = f"{ACTION_PREFIX}:paste_bytes"
 
     def _init_action_paste_bytes(self):
         """
